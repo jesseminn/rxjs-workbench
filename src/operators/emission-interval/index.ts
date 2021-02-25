@@ -2,7 +2,7 @@ import { defer, MonoTypeOperatorFunction, Observable, OperatorFunction } from 'r
 import { finalize, map, scan, share } from 'rxjs/operators';
 
 // Types
-import { Interval, Options } from './type';
+import { Interval, Options } from './types';
 
 // Utils
 import { fillOptions } from './utils';
