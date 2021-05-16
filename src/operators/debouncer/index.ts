@@ -1,13 +1,13 @@
 import { timer, Observable, MonoTypeOperatorFunction, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { DebouncerType } from './types';
+import { DebounceType } from './types';
 
 // Follows the pattern of debounceFn
 export const debouncer = <T>(
-    debouncerType: DebouncerType,
+    debouncerType: DebounceType,
     durationSelector: (v: T) => Observable<unknown>,
 ): MonoTypeOperatorFunction<T> => {
-    const emitImmediately = debouncerType === DebouncerType.After;
+    const emitImmediately = debouncerType === DebounceType.After;
     let subscription: Subscription | null = null;
 
     return input$ => {
@@ -37,11 +37,11 @@ export const debouncer = <T>(
 
 // Derive
 export const afterDebouncer = <T>(durationSelector: (v: T) => Observable<unknown>) =>
-    debouncer(DebouncerType.After, durationSelector);
+    debouncer(DebounceType.After, durationSelector);
 
 export const afterDebouncerTime = (duration: number) => afterDebouncer(() => timer(duration));
 
 export const beforeDebouncer = <T>(durationSelector: (v: T) => Observable<unknown>) =>
-    debouncer(DebouncerType.Before, durationSelector);
+    debouncer(DebounceType.Before, durationSelector);
 
 export const beforeDebouncerTime = (duration: number) => beforeDebouncer(() => timer(duration));

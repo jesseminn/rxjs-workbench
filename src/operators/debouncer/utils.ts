@@ -1,30 +1,40 @@
-import { DebouncerType, Fn } from './types';
+import { DebounceType, Fn } from './types';
 
 // Inspired by classic debounce function implementation
 // Very clever!!
 // https://davidwalsh.name/javascript-debounce-function
-const debouncer = (debounceType: DebouncerType, duration: number, fn: Fn) => {
-    const callImmediately = debounceType === DebouncerType.After;
+export const debounce = (debounceType: DebounceType, duration: number, fn: Fn) => {
+    const callImmediately = [DebounceType.After, DebounceType.Between].includes(debounceType);
     let id: ReturnType<typeof setTimeout> | null = null;
+    let count = 0;
 
     return (...args: any[]) => {
+        count += 1;
         const callNow = callImmediately && id === null;
 
-        typeof id === 'number' && clearTimeout(id);
+        if (typeof id === 'number') {
+            clearTimeout(id);
+        }
 
         id = setTimeout(() => {
             id = null;
 
-            // The first possible place to call the function
-            !callImmediately && fn(...args);
+            if ((debounceType === DebounceType.Between && count > 1) || debounceType === DebounceType.Before) {
+                fn(...args);
+            }
+
+            count = 0;
         }, duration);
 
-        // The second possible place to call the function
-        callNow && fn(...args);
+        if (callNow) {
+            fn(...args);
+        }
     };
 };
 
 // Derive
-export const afterDebouncer = (duration: number, fn: Fn) => debouncer(DebouncerType.After, duration, fn);
+export const debounceAfter = (duration: number, fn: Fn) => debounce(DebounceType.After, duration, fn);
 
-export const beforeDebouncer = (duration: number, fn: Fn) => debouncer(DebouncerType.Before, duration, fn);
+export const debounceBefore = (duration: number, fn: Fn) => debounce(DebounceType.Before, duration, fn);
+
+export const debounceBetween = (duration: number, fn: Fn) => debounce(DebounceType.Between, duration, fn);
